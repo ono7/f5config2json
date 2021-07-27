@@ -78,6 +78,26 @@ lines = """ltm virtual export_me {
     vs-cursor 2
 }
 """
+lines2 = """ltm virtual export_me2 {
+    description "Other VS node"
+    destination 10.21.30.30:https
+    ip-protocol tcp
+    mask 255.255.255.255
+    policies {
+        linux-high { }
+    }
+    pool test-pool
+    source 0.0.0.0/0
+    source-address-translation {
+        type automap
+    }
+    translate-address enabled
+    translate-port enabled
+    vs-cursor 2
+}
+"""
+
+blocks = [lines, lines2]
 
 # TODO: 07/27/2021 |  deal with special structures, e.g. asm
 def parse_policy(policy):
@@ -108,7 +128,13 @@ def parse_policy(policy):
     return storage_stack[0].get_store()
 
 
-print("-" * 40 + " Original CFG " + "-" * 40)
-print(lines)
-print("-" * 40 + " JSON " + "-" * 40)
-print(dumps(parse_policy(lines), indent=2))
+# print("-" * 40 + " Original CFG " + "-" * 40)
+# print(lines)
+# print("-" * 40 + " JSON " + "-" * 40)
+
+parsed = {"ltm:virtual": {}}
+for block in blocks:
+    p = parse_policy(block)
+    parsed.setdefault("ltm:virtual", {}).update(p["ltm:virtual"])
+
+print(dumps(parsed, indent=2))
