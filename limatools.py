@@ -20,6 +20,7 @@
 
 import re
 from base64 import b64encode
+from typing import Tuple, List
 
 
 ### regex compile ###
@@ -32,18 +33,8 @@ re_special = re.compile(r"(rules \{)")
 
 ## policy helpers ##
 
-# lines2 = """ltm virtual export_me2 {
-#     description "Other VS node"
-#     rules {
-#         {
-#             caption "Browser"
-#         }
-#     }
-# }
-# """
 
-
-def parse_policy(policy, b64=False):
+def parse_policy(policy: str, b64: bool = False) -> object:
     """parse a stanza object from f5 and return python dict
     optionaly embed original config block encoded in base64
     parse_policy(data, b64=True)
@@ -51,8 +42,8 @@ def parse_policy(policy, b64=False):
     lines = clean_data_chunk(policy).splitlines()
     if len(lines) == 1:
         return parse_singleton(lines[0])
-    storage_stack = []
-    obj_stack = []
+    storage_stack: List[object] = []
+    obj_stack: List[object] = []
     for line in lines:
         if line.strip() == "}" and this_stack.is_balanced():
             if storage_stack[-1].parent and len(storage_stack) != 1:
@@ -69,7 +60,6 @@ def parse_policy(policy, b64=False):
                     storage_stack.pop()
                 continue
         if line.endswith("{"):
-            # TODO: 07/27/2021 | implement structure for dict with out parent key here {}
             this_stack = create_new_objects(line, storage_stack, obj_stack)
             continue
         storage_stack[-1].update(parse_kv(line))
@@ -78,14 +68,14 @@ def parse_policy(policy, b64=False):
     return storage_stack[0].get_store()
 
 
-def clean_data_chunk(chunk):
+def clean_data_chunk(chunk: str) -> str:
     """ remove space around chunk and remove empty lines """
     empty_lines = re.compile(r"[\n]+")
     c = chunk.strip()
     return empty_lines.sub("\n", c)
 
 
-def create_new_objects(line, storage_stack, obj_stack):
+def create_new_objects(line: str, storage_stack: object, obj_stack: object) -> object:
     """creates new storage and this_stack objects
     if the the storage this_stack contains a previous object
     this current object's parent attribute is set
@@ -108,7 +98,7 @@ class Storage:
     currently in the stack
     """
 
-    def __init__(self, k1=None, k2=None):
+    def __init__(self, k1: str = None, k2=None):
         self.k1 = k1
         self.k2 = k2
         self.parent = None
@@ -121,7 +111,7 @@ class Storage:
         else:
             self.storage = {k1: {}}
 
-    def update(self, data):
+    def update(self, data: dict) -> None:
         if isinstance(self.k2, str):
             self.storage[self.k1][self.k2].update(data)
         elif isinstance(self.k2, list):
@@ -146,7 +136,7 @@ class Stack:
         self.len = 0
         self.by_who = None
 
-    def update_state(self, line):
+    def update_state(self, line: str) -> bool:
         self.last = self.current
         self.current = line
         if self.current.endswith("{"):
@@ -171,7 +161,7 @@ class Stack:
 ### parsers ###
 
 
-def parse_singleton(data):
+def parse_singleton(data: str) -> object:
     """parse single line objects
     e.g.
         apm client-packaging /Common/client-packaging
@@ -183,7 +173,7 @@ def parse_singleton(data):
 list_keys = ["rules"]
 
 
-def is_parent(line):
+def is_parent(line: str) -> Tuple:
     """if the line ends with  `word {`, this represents the start of a
     new objectk if a line is multiple words:
         `word1 word2 /Common/blah {}`
@@ -209,8 +199,14 @@ def is_parent(line):
     return level1, level2
 
 
-def parse_kv(line):
-    """ parses the inner objects of a stanza block of config """
+def parse_kv(line: str) -> dict:
+    """parses the inner objects of a stanza block of config
+    parent_key {
+        key1 value1  <- this
+        description "value1 blah" <- this
+        other { item1 item2 item3 } <- this
+    }
+    """
     try:
         if line.endswith('"'):
             k, v = re_quotes.search(line).groups()
