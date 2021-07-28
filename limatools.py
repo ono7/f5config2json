@@ -231,6 +231,7 @@ def parse_kv(line: str) -> dict:
             k = re_kv.findall(line)
             return {k: None}
     except Exception as e:
+        breakpoint()
         raise ValueError(
             f"\n\nwell, this didnt workout.. {line}, the exeption was: {e}\nline -> {line}"
         )
