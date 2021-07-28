@@ -44,7 +44,10 @@ re_special = re.compile(r"(rules \{)")
 
 
 def parse_policy(policy, b64=False):
-    """ parse a stanza object from f5 and return python dict """
+    """parse a stanza object from f5 and return python dict
+    optionaly embed original config block encoded in base64
+    parse_policy(data, b64=True)
+    """
     lines = clean_data_chunk(policy).splitlines()
     if len(lines) == 1:
         return parse_singleton(lines[0])
