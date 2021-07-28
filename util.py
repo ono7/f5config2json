@@ -19,9 +19,41 @@
 """
 
 import re
+from base64 import b64encode
 
 
 ## policy helpers ##
+
+
+def parse_policy(policy):
+    """ parse a stanza object from f5 and return python dict """
+    lines = clean_data_chunk(policy).splitlines()
+    if len(lines) == 1:
+        return parse_singleton(lines[0])
+    storage_stack = []
+    obj_stack = []
+    for line in lines:
+        if line.strip() == "}" and this_stack.is_balanced():
+            if storage_stack[-1].parent and len(storage_stack) != 1:
+                storage_stack[-1].parent.update(storage_stack[-1].get_store())
+                storage_stack.pop()
+                this_stack = obj_stack.pop()
+            continue
+        if line.strip() == "}":
+            this_stack.update_state(line)
+            if this_stack.is_balanced() and len(obj_stack) != 0:
+                this_stack = obj_stack.pop()
+                if storage_stack[-1].parent and len(storage_stack) != 1:
+                    storage_stack[-1].parent.update(storage_stack[-1].get_store())
+                    storage_stack.pop()
+                continue
+        # TODO: 07/27/2021 | if we need to handle special data structures, we would do it here
+        if line.endswith("{"):
+            this_stack = create_new_objects(line, storage_stack, obj_stack)
+            continue
+        storage_stack[-1].update(parse_kv(line))
+    storage_stack[0].update({"ori_cfg_b64": f"{b64encode(policy.encode())}"})
+    return storage_stack[0].get_store()
 
 
 def clean_data_chunk(chunk):
@@ -106,9 +138,12 @@ class Stack:
 
 
 def parse_singleton(data):
-    g1, g2 = re.search("(\S+).*?{([^{}]*)}", data).groups()
-
-    return {g1: g2.split()}
+    """parse single line objects
+    e.g.
+        apm client-packaging /Common/client-packaging
+    """
+    new_node = Storage(*is_parent(data))
+    return new_node.get_store()
 
 
 re_quotes = re.compile(r'\b(\S+) "([^"]+)"$')
@@ -156,10 +191,10 @@ def parse_kv(line):
         print(f"well, this didnt workout.. {line}, the exeption was: {e}")
 
 
-def get_container_type(current_line, next_line):
-    """ not implemented, hold for later use """
-    l1 = current_line.strip()
-    l2 = next_line.strip()
-    if re.search("{(\s*?)?}$", l1) and re.search("^{", l2):
-        return {}, []
-    return {}
+# def get_container_type(current_line, next_line):
+#     """ not implemented, hold for later use """
+#     l1 = current_line.strip()
+#     l2 = next_line.strip()
+#     if re.search("{(\s*?)?}$", l1) and re.search("^{", l2):
+#         return {}, []
+#     return {}
