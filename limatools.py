@@ -29,7 +29,7 @@ re_quotes = re.compile(r'\b(\S+) "(.*)"$')
 re_kv = re.compile(r"\S+")
 re_keys = re.compile(r"[^{} ]+")
 re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
-re_special = re.compile(r"(rules \{)")
+re_special = re.compile(r"(rules \{|log-settings \{)")
 
 
 ## policy helpers ##
