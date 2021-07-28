@@ -222,7 +222,10 @@ def parse_kv(line: str) -> dict:
         k, v = re_kv.findall(line)
         return {k: v}
     except Exception as e:
-        print(f"well, this didnt workout.. {line}, the exeption was: {e}")
+        __import__("ipdb").set_trace(context=5)
+        raise ValueError(
+            f"\n\nwell, this didnt workout.. {line}, the exeption was: {e}\nline -> {line}"
+        )
 
 
 # def get_container_type(current_line, next_line):
