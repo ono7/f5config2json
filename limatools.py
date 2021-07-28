@@ -36,8 +36,7 @@ re_special = re.compile(r"(rules \{|log-settings \{|\b\d+\b {)")
 list_keys = ["rules", "log-settings", "\d+ {"]
 list_keys = sorted(list_keys, key=len, reverse=True)
 list_keys = "|".join(list_keys)
-
-re_is_list = re.compile(f"({list_keys})")
+value_is_list = re.compile(f"({list_keys})")
 
 
 ## policy helpers ##
@@ -200,7 +199,7 @@ def is_parent(line: str) -> Tuple:
             level1 = ":".join(results)
             return level1, level2
         # if level1 key is in this, return a list
-        if re_is_list.search(results[0]):
+        if value_is_list.search(results[0]):
             return results[0], []
         level1, level2 = results[0], None
     return level1, level2
@@ -225,8 +224,12 @@ def parse_kv(line: str) -> dict:
             else:
                 v = []
             return {k: v}
-        k, v = re_kv.findall(line)
-        return {k: v}
+        try:
+            k, v = re_kv.findall(line)
+            return {k: v}
+        except ValueError:
+            k = re_kv.findall(line)
+            return {k: None}
     except Exception as e:
         raise ValueError(
             f"\n\nwell, this didnt workout.. {line}, the exeption was: {e}\nline -> {line}"
