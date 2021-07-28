@@ -43,7 +43,7 @@ re_special = re.compile(r"(rules \{)")
 # """
 
 
-def parse_policy(policy):
+def parse_policy(policy, b64=False):
     """ parse a stanza object from f5 and return python dict """
     lines = clean_data_chunk(policy).splitlines()
     if len(lines) == 1:
@@ -70,7 +70,8 @@ def parse_policy(policy):
             this_stack = create_new_objects(line, storage_stack, obj_stack)
             continue
         storage_stack[-1].update(parse_kv(line))
-    storage_stack[0].update({"ori_cfg_b64": f"{b64encode(policy.encode())}"})
+    if b64:
+        storage_stack[0].update({"ori_cfg_b64": f"{b64encode(policy.encode())}"})
     return storage_stack[0].get_store()
 
 
