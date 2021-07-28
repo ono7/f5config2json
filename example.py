@@ -42,6 +42,7 @@ lines = """ltm virtual export_me {
     source-address-translation {
         type automap
     }
+    test "
     translate-address enabled
     translate-port enabled
     vs-cursor 2
