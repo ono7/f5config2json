@@ -22,7 +22,25 @@ import re
 from base64 import b64encode
 
 
+### regex compile ###
+re_quotes = re.compile(r'\b(\S+) "([^"]+)"$')
+re_kv = re.compile(r"\S+")
+re_keys = re.compile(r"[^{} ]+")
+re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
+re_special = re.compile(r"(rules \{)")
+
+
 ## policy helpers ##
+
+# lines2 = """ltm virtual export_me2 {
+#     description "Other VS node"
+#     rules {
+#         {
+#             caption "Browser"
+#         }
+#     }
+# }
+# """
 
 
 def parse_policy(policy):
@@ -47,8 +65,8 @@ def parse_policy(policy):
                     storage_stack[-1].parent.update(storage_stack[-1].get_store())
                     storage_stack.pop()
                 continue
-        # TODO: 07/27/2021 | if we need to handle special data structures, we would do it here
         if line.endswith("{"):
+            # TODO: 07/27/2021 | implement structure for dict with out parent key here {}
             this_stack = create_new_objects(line, storage_stack, obj_stack)
             continue
         storage_stack[-1].update(parse_kv(line))
@@ -82,18 +100,26 @@ def create_new_objects(line, storage_stack, obj_stack):
 class Storage:
     """ storage container for stanza configs """
 
-    def __init__(self, k1, k2=None):
+    def __init__(self, k1=None, k2=None):
         self.k1 = k1
         self.k2 = k2
         self.parent = None
-        if k2:
+        if isinstance(k2, list):
+            self.storage = {k1: []}
+        elif isinstance(k2, dict):
+            self.storage = {}
+        elif isinstance(k2, str):
             self.storage = {k1: {k2: {}}}
         else:
             self.storage = {k1: {}}
 
     def update(self, data):
-        if self.k2:
+        if isinstance(self.k2, str):
             self.storage[self.k1][self.k2].update(data)
+        elif isinstance(self.k2, list):
+            self.storage[self.k1].append(data)
+        elif isinstance(self.k2, dict):
+            self.storage.update(data)
         else:
             self.storage[self.k1].update(data)
 
@@ -146,10 +172,7 @@ def parse_singleton(data):
     return new_node.get_store()
 
 
-re_quotes = re.compile(r'\b(\S+) "([^"]+)"$')
-re_kv = re.compile(r"\S+")
-re_keys = re.compile(r"[^{} ]+")
-re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
+list_keys = ["rules"]
 
 
 def is_parent(line):
@@ -161,13 +184,19 @@ def is_parent(line):
         -> {"word1:word2" : {"/Common/blahs" : {}}
     other wise if the line is `word1 {}`
         -> {"word1" : {}}
+    this function works together with Storage to create the correct
+    data structure for the current object
     """
+    if line.strip() == "{":
+        return None, {}
     results = re_keys.findall(line)
     if results:
         if len(results) > 1:
             level2 = results.pop(-1)
             level1 = ":".join(results)
             return level1, level2
+        if results[0] in list_keys:
+            return results[0], []
         level1, level2 = results[0], None
     return level1, level2
 
