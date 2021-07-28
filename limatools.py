@@ -75,7 +75,6 @@ def parse_policy(policy: str, b64: bool = False) -> object:
                 continue
         if line.endswith("{"):
             this_stack = create_new_objects(line, storage_stack, obj_stack)
-            __import__("pdb").set_trace()
             if storage_stack[-1].k1 in only_encode:
                 storage_stack[-1].update({"b64": f"{b64encode(policy.encode())}"})
                 return storage_stack[0].get_store()

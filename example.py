@@ -58,7 +58,7 @@ when this {
 """
 
 # print(dumps(parse_policy(lines, b64=True), indent=2))
-data = [irule]
+data = [lines, irule]
 for d in data:
     print(dumps(parse_policy(d), indent=2))
 
