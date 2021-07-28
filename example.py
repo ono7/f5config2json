@@ -42,6 +42,9 @@ lines = """ltm virtual export_me {
     }
     translate-address enabled
     translate-port enabled
+    {
+        oooy!!
+    }
     vs-cursor 2
 }
 """
