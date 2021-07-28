@@ -43,16 +43,16 @@ list_keys = sorted(list_keys, key=len, reverse=True)
 list_keys = "|".join(list_keys)
 value_is_list = re.compile(f"({list_keys})")
 
-only_encode = ["ltm:rule"]
-
 ## policy helpers ##
 
 
-def parse_policy(policy: str, b64: bool = False) -> object:
+def parse_policy(policy: str, b64: bool = False, encode_only: list = None) -> object:
     """parse a stanza object from f5 and return python dict
     optionaly embed original config block encoded in base64
     parse_policy(data, b64=True)
     """
+    if not encode_only:
+        encode_only = []
     lines = clean_data_chunk(policy).splitlines()
     if len(lines) == 1:
         return parse_singleton(lines[0])
@@ -75,7 +75,7 @@ def parse_policy(policy: str, b64: bool = False) -> object:
                 continue
         if line.endswith("{"):
             this_stack = create_new_objects(line, storage_stack, obj_stack)
-            if storage_stack[-1].k1 in only_encode:
+            if storage_stack[-1].k1 in encode_only:
                 storage_stack[-1].update({"b64": f"{b64encode(policy.encode())}"})
                 return storage_stack[0].get_store()
             continue
