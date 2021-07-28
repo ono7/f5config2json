@@ -23,6 +23,11 @@ import re
 from base64 import b64encode
 from typing import Tuple, List, Any
 from sys import exit
+import logging
+
+logging.basicConfig(format="%(levelname)s : %(message)s", filename="error.log")
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
 
 
 ### regex compile ###
@@ -33,7 +38,13 @@ re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
 re_special = re.compile(r"(rules \{|log-settings \{|\b\d+\b {)")
 
 # handle cases where the stanza key represents a list to follow
-list_keys = ["rules", "log-settings", "\d+ {"]
+list_keys = [
+    "rules",
+    "log-settings",
+    "\d+ {",
+    "attributes",
+    "assertion-consumer-services",
+]
 list_keys = sorted(list_keys, key=len, reverse=True)
 list_keys = "|".join(list_keys)
 value_is_list = re.compile(f"({list_keys})")
@@ -232,10 +243,8 @@ def parse_kv(line: str) -> dict:
             k = re_kv.findall(line)
             return {k[0]: None}
     except Exception as e:
-        breakpoint()
-        raise ValueError(
-            f"\n\nwell, this didnt workout.. {line}, the exeption was: {e}\nline -> {line}"
-        )
+        logging.warning("error parsking line -> %s", line)
+        raise
 
 
 # def get_container_type(current_line, next_line):
