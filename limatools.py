@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """ Utilities for implementing stacks to track stanza config objects
+    and generate JSON output
 
     e.g.
 
@@ -20,7 +21,7 @@
 
 import re
 from base64 import b64encode
-from typing import Tuple, List
+from typing import Tuple, List, Any
 
 
 ### regex compile ###
@@ -98,7 +99,7 @@ class Storage:
     currently in the stack
     """
 
-    def __init__(self, k1: str = None, k2=None):
+    def __init__(self, k1: str = None, k2: Any = None):
         self.k1 = k1
         self.k2 = k2
         self.parent = None
