@@ -43,6 +43,7 @@ list_keys = sorted(list_keys, key=len, reverse=True)
 list_keys = "|".join(list_keys)
 value_is_list = re.compile(f"({list_keys})")
 
+only_encode = ["ltm:rule"]
 
 ## policy helpers ##
 
@@ -74,6 +75,10 @@ def parse_policy(policy: str, b64: bool = False) -> object:
                 continue
         if line.endswith("{"):
             this_stack = create_new_objects(line, storage_stack, obj_stack)
+            if storage_stack[-1].k1 in only_encode:
+                return storage_stack[-1].update(
+                    {"only_cfg_b64": f"{b64encode(policy.encode())}"}
+                )
             continue
         storage_stack[-1].update(parse_kv(line))
     if b64:
