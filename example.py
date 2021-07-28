@@ -9,6 +9,8 @@
 from json import dumps
 from limatools import parse_policy
 
+ltm_re = r"(?sm)((^ltm.*?^\}\n\})|^\w.*?(?=^\w|\Z))"
+
 lines = """ltm virtual export_me {
     description "This is for export.  Export this description."
     destination 10.1.30.30:https

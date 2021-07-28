@@ -1,0 +1,2 @@
+extract ltm rule blocks and any other stanza block `example { }`
+`((^ltm rule.*?^\}\n\})|^\w.*?(?=^\w|\Z))`
