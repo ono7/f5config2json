@@ -228,8 +228,9 @@ def parse_kv(line: str) -> dict:
             k, v = re_kv.findall(line)
             return {k: v}
         except ValueError:
+            # deals with single items in a line that are not k, v pairs
             k = re_kv.findall(line)
-            return {k: None}
+            return {k[0]: None}
     except Exception as e:
         breakpoint()
         raise ValueError(
