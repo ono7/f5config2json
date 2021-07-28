@@ -44,10 +44,6 @@ lines = """ltm virtual export_me {
     }
     translate-address enabled
     translate-port enabled
-    {
-        oooy!!
-    }
-    testst "
     vs-cursor 2
 }
 """
@@ -62,7 +58,7 @@ when this {
 """
 
 # print(dumps(parse_policy(lines, b64=True), indent=2))
-data = [lines]
+data = [irule]
 for d in data:
     print(dumps(parse_policy(d), indent=2))
 
