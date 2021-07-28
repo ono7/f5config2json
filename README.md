@@ -8,6 +8,6 @@ converts f5 stanza config blocks to JSON
     keys containing '.' should be normilized etc...
 
     test:
-        `python3 f5conf2json.py`
+        `python3 example.py`
 
 """
