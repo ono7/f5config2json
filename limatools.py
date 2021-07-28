@@ -25,9 +25,15 @@ from typing import Tuple, List, Any
 from sys import exit
 import logging
 
-logging.basicConfig(format="%(levelname)s : %(message)s", filename="error.log")
-logger = logging.getLogger()
-logger.setLevel(logging.WARNING)
+logging.basicConfig(
+    format="%(asctime)s %(name)s %(levelname)s : %(message)s",
+    datefmt="%m/%d/%Y %I:%M:%S",
+    filename="error.log",
+    filemode="w",
+    level=logging.WARNING,
+)
+logger = logging.getLogger(__name__)
+# logger.error(e, exc_info=True)
 
 
 ### regex compile ###
@@ -243,7 +249,7 @@ def parse_kv(line: str) -> dict:
             k = re_kv.findall(line)
             return {k[0]: None}
     except Exception as e:
-        logging.warning("error parsking line -> %s", line)
+        logging.warning("error parsing line -> %s", line)
         raise
 
 

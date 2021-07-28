@@ -45,6 +45,7 @@ lines = """ltm virtual export_me {
     {
         oooy!!
     }
+    testst "
     vs-cursor 2
 }
 """
