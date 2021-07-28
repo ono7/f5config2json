@@ -22,6 +22,7 @@
 import re
 from base64 import b64encode
 from typing import Tuple, List, Any
+from sys import exit
 
 
 ### regex compile ###
@@ -29,7 +30,7 @@ re_quotes = re.compile(r'\b(\S+) "(.*)"$')
 re_kv = re.compile(r"\S+")
 re_keys = re.compile(r"[^{} ]+")
 re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
-re_special = re.compile(r"(rules \{|log-settings \{)")
+re_special = re.compile(r"(rules \{|log-settings \{|\b\d+\b {)")
 
 
 ## policy helpers ##
@@ -222,7 +223,6 @@ def parse_kv(line: str) -> dict:
         k, v = re_kv.findall(line)
         return {k: v}
     except Exception as e:
-        __import__("ipdb").set_trace(context=5)
         raise ValueError(
             f"\n\nwell, this didnt workout.. {line}, the exeption was: {e}\nline -> {line}"
         )
