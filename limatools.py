@@ -98,7 +98,11 @@ def create_new_objects(line, storage_stack, obj_stack):
 
 
 class Storage:
-    """ storage container for stanza configs """
+    """storage container for stanza configs
+    relies on results from is_parent function to create
+    an appropiate data structure for the type of node
+    currently in the stack
+    """
 
     def __init__(self, k1=None, k2=None):
         self.k1 = k1
