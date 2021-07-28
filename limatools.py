@@ -25,7 +25,7 @@ from typing import Tuple, List, Any
 from sys import exit
 
 ### regex compile ###
-re_quotes = re.compile(r'\b(\S+) "(.*)"$')
+re_quotes = re.compile(r'\b(\S+) "(.*)"')
 re_kv = re.compile(r"\S+")
 re_keys = re.compile(r"[^{} ]+")
 re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
