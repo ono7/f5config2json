@@ -59,8 +59,9 @@ when this {
 
 # print(dumps(parse_policy(lines, b64=True), indent=2))
 data = [lines, irule]
+encode = ["ltm:rule"]
 for d in data:
-    print(dumps(parse_policy(d), indent=2))
+    print(dumps(parse_policy(d, encode_only=encode), indent=2))
 
 # parsed = {"ltm:virtual": {}}
 # for block in blocks:
