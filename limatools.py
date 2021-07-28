@@ -32,6 +32,13 @@ re_keys = re.compile(r"[^{} ]+")
 re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
 re_special = re.compile(r"(rules \{|log-settings \{|\b\d+\b {)")
 
+# handle cases where the stanza key represents a list to follow
+list_keys = ["rules", "log-settings", "\d+ {"]
+list_keys = sorted(list_keys, key=len, reverse=True)
+list_keys = "|".join(list_keys)
+
+re_is_list = re.compile(f"({list_keys})")
+
 
 ## policy helpers ##
 
@@ -172,9 +179,6 @@ def parse_singleton(data: str) -> object:
     return new_node.get_store()
 
 
-list_keys = ["rules"]
-
-
 def is_parent(line: str) -> Tuple:
     """if the line ends with  `word {`, this represents the start of a
     new objectk if a line is multiple words:
@@ -195,7 +199,8 @@ def is_parent(line: str) -> Tuple:
             level2 = results.pop(-1)
             level1 = ":".join(results)
             return level1, level2
-        if results[0] in list_keys:
+        # if level1 key is in this, return a list
+        if re_is_list.search(results[0]):
             return results[0], []
         level1, level2 = results[0], None
     return level1, level2
