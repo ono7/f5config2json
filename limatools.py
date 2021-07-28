@@ -77,12 +77,12 @@ def parse_policy(policy: str, b64: bool = False) -> object:
             this_stack = create_new_objects(line, storage_stack, obj_stack)
             if storage_stack[-1].k1 in only_encode:
                 return storage_stack[-1].update(
-                    {"only_cfg_b64": f"{b64encode(policy.encode())}"}
+                    {"b64": f"{b64encode(policy.encode())}"}
                 )
             continue
         storage_stack[-1].update(parse_kv(line))
     if b64:
-        storage_stack[0].update({"ori_cfg_b64": f"{b64encode(policy.encode())}"})
+        storage_stack[0].update({"b64": f"{b64encode(policy.encode())}"})
     return storage_stack[0].get_store()
 
 

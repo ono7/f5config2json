@@ -52,9 +52,19 @@ lines = """ltm virtual export_me {
 }
 """
 
+irule = """ltm rule /Common/test {
+# test
+when this {
+  isthis working?
+ }
+}
+}
+"""
 
 # print(dumps(parse_policy(lines, b64=True), indent=2))
-print(dumps(parse_policy(lines), indent=2))
+data = [lines]
+for d in data:
+    print(dumps(parse_policy(d), indent=2))
 
 # parsed = {"ltm:virtual": {}}
 # for block in blocks:
