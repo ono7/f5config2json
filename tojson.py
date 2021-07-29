@@ -22,6 +22,7 @@
 import re
 from base64 import b64encode
 from typing import Tuple, List, Any
+from context import kv_context
 
 ### rock stars ###
 
@@ -147,7 +148,6 @@ def create_new_objects(line: str, storage_stack: object, obj_stack: object) -> o
     new_node = Storage(*is_parent(line))
     if len(storage_stack) > 0:
         new_node.parent = storage_stack[-1]
-        new_node.root = storage_stack[0].k1
     storage_stack.append(new_node)
     new_stack = Stack()
     new_stack.update_state(line)
@@ -194,37 +194,6 @@ def is_parent(line: str) -> Tuple:
     return level1, level2
 
 
-def parse_kv(line: str) -> dict:
-    """parses the inner objects of a stanza block of config
-    parent_key {
-        key1 value1  <- this
-        description "value1 blah" <- this
-        other { item1 item2 item3 } <- this
-    }
-    """
-    try:
-        if line.endswith('"'):
-            k, v = re_quotes.search(line).groups()
-            return {k: v}
-        if re.findall(r"{.*}", line):
-            k, v = re_list.search(line).groups()
-            if v != " ":
-                v = v.split()
-            else:
-                v = []
-            return {k: v}
-        try:
-            k, v = re_kv.findall(line)
-            return {k: v}
-        except ValueError:
-            # deals with single items in a line that are not k, v pairs
-            k = re_kv.findall(line)
-            return {k[0]: None}
-    except Exception as e:
-        ValueError("error parsing line -> %s", line)
-        raise
-
-
 def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> object:
     """parse a stanza object from f5 and return python dict
 
@@ -269,7 +238,7 @@ def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> ob
                 )
                 return storage_stack[0].get_store()
             continue
-        storage_stack[-1].update(parse_kv(line))
+        storage_stack[-1].update(kv_context(line, context=storage_stack[0].k1))
     if b64:
         storage_stack[0].update({"b64": f"{b64encode(policy.encode()).decode()}"})
     return storage_stack[0].get_store()

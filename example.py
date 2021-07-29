@@ -59,14 +59,26 @@ when this {
 """
 
 lines3 = """ltm virtual "/Common/Spaced out" {
-    description "this line is broken.  
-Export this description.  
+    description "this line is broken.
+Export this description.
 "
     destination 10.1.30.30:https
 }"""
 
+lines = """ltm pool /test/context {
+    description "testing context"
+    load-balancing-mode least-connections-members
+    members {
+        /common/test/member {
+            address 1.1.1.1
+            monitor /test/monitor and /test/monitor/2
+        }
+    }
+    service-downaction reset
+}
+"""
 # print(dumps(parse_policy(lines, b64=True), indent=2))
-data = [lines, irule, lines3]
+data = [lines]
 encode = ["ltm:rule"]
 for d in data:
     print(dumps(parse_policy(d, encode_this=encode, b64=True), indent=2))
