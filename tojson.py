@@ -37,6 +37,7 @@ class Storage:
         self.k1 = k1
         self.k2 = k2
         self.parent = None
+        self.root = None
         if isinstance(k2, list):
             self.storage = {k1: []}
         elif isinstance(k2, dict):
@@ -119,12 +120,12 @@ value_is_list = re.compile(f"({list_keys})")
 
 
 def clean_data_chunk(chunk: str) -> str:
-    """remove space around chunk and remove empty lines
+    """cleans up a F5 configuration chunk
 
     clean_empty_lines: removes any empty lines only [\n] is supported
 
     clean_broken_line: there are cases where the F5 config has lines that are
-        broken specially seen in long quoated strings, this fixes it by replacing
+        broken specially seen in long quoted strings, this fixes it by replacing
         the trailing space and newline with a single space (this might require more testing)
     """
     clean_empty_lines = re.compile(r"[\n]+")
@@ -143,6 +144,7 @@ def create_new_objects(line: str, storage_stack: object, obj_stack: object) -> o
     new_node = Storage(*is_parent(line))
     if len(storage_stack) > 0:
         new_node.parent = storage_stack[-1]
+        new_node.root = storage_stack[0].k1
     storage_stack.append(new_node)
     new_stack = Stack()
     new_stack.update_state(line)
@@ -222,6 +224,10 @@ def parse_kv(line: str) -> dict:
 
 def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> object:
     """parse a stanza object from f5 and return python dict
+
+    policy: a block of F5 config, e.g. parent { attribute value }
+        one probably should regex-fu the blocks out of a config text document
+        before sending them here
 
     b64: optionaly embed original config block encoded in base64
         parse_policy(data, b64=True)
