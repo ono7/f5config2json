@@ -107,7 +107,7 @@ re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
 store_contex = {"ltm:virtual": ["stuff"]}
 
 list_keys = [
-    # "rules",
+    "rules",
     "images",
     "variables",
     "rows",
