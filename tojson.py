@@ -107,6 +107,9 @@ store_contex = {"ltm:virtual": ["stuff"]}
 
 list_keys = [
     "rules",
+    "images",
+    "variables",
+    "rows",
     "log-settings",
     "\d+ {",
     "attributes",
