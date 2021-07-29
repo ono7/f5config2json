@@ -11,7 +11,7 @@ import re
 ### one line parsers ###
 default_quotes = re.compile(r"\b(\S+) (.*)")
 default_kv = re.compile(r"\S+")
-default_list = re.compile(r"(\S+) {(?:([^{}]*))}")
+default_list_kv = re.compile(r"(\S+) {(?:([^{}]*))}")
 
 
 ### this searches looks for values that would construct a {k : []} container ###
@@ -25,9 +25,9 @@ ltm_list_keys = [
     "attributes",
     "assertion-consumer-services",
 ]
-default_list = sorted(ltm_list_keys, key=len, reverse=True)
-default_list = "|".join(default_list)
-default_list = re.compile(f"({default_list})")
+default_list_key_pre = sorted(ltm_list_keys, key=len, reverse=True)
+default_list_key_pre = "|".join(default_list_key_pre)
+default_list_key_re = re.compile(f"({default_list_key_pre})")
 
 re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
 
@@ -48,7 +48,7 @@ def context_ltm_pool(line: str):
         k, v = default_quotes.search(line).groups()
         return {k: v}
     if re.findall(r"{.*}", line):
-        k, v = default_list.search(line).groups()
+        k, v = default_list_kv.search(line).groups()
         if v != " ":
             v = v.split()
         else:
