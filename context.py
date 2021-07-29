@@ -68,7 +68,7 @@ def context_default(line: str):
         k, v = default_quotes.search(line).groups()
         return {k: v}
     if re.findall(r"{.*}", line):
-        k, v = default_list.search(line).groups()
+        k, v = default_list_key_re.search(line).groups()
         if v != " ":
             v = v.split()
         else:
