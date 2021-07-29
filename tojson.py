@@ -165,12 +165,12 @@ def parse_singleton(data: str) -> object:
 def is_parent(line: str) -> Tuple:
     """if the line ends with  `word {`, this represents the start of a
     new objectk if a line is multiple words:
-        `word1 word2 /Common/blah {}`
+        `level1 word2 /Common/level2 {}`
     we pair the first 2 words to represent the parent key
     and return a nested structure:
-        -> {"word1:word2" : {"/Common/blahs" : {}}
-    other wise if the line is `word1 {}`
-        -> {"word1" : {}}
+        -> {"level1:word2" : {"/Common/level2" : {}}
+    other wise if the line is `level1 {}`
+        -> {"level1" : {}}
     this function works together with Storage to create the correct
     data structure for the current object
     """
