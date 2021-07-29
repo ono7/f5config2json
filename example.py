@@ -7,7 +7,7 @@
 """
 
 from json import dumps
-from limatools import parse_policy
+from tojson import parse_policy
 
 ltm_re = r"(?sm)((^ltm.*?^\}\n\})|^\w.*?(?=^\w|\Z))"
 
@@ -62,7 +62,7 @@ when this {
 data = [lines, irule]
 encode = ["ltm:rule"]
 for d in data:
-    print(dumps(parse_policy(d, encode_only=encode), indent=2))
+    print(dumps(parse_policy(d, encode_this=encode), indent=2))
 
 # parsed = {"ltm:virtual": {}}
 # for block in blocks:
