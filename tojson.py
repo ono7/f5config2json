@@ -120,10 +120,12 @@ value_is_list = re.compile(f"({list_keys})")
 
 def clean_data_chunk(chunk: str) -> str:
     """ remove space around chunk and remove empty lines """
-    empty_lines = re.compile(r"[\n]+")
+    clean_empty_lines = re.compile(r"[\n]+")
+    clean_broken_line = re.compile(r"\s+\n")
     c = chunk.strip()
     # TODO: 07/28/2021 | can we fix line breaks with trailing whitespace here?
-    return empty_lines.sub("\n", c)
+    c = clean_empty_lines.sub("\n", c)
+    return clean_broken_line.sub(" ", c)
 
 
 def create_new_objects(line: str, storage_stack: object, obj_stack: object) -> object:
