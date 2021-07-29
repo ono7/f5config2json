@@ -12,7 +12,10 @@ import re
 default_quotes = re.compile(r"\b(\S+) (.*)")
 default_kv = re.compile(r"\S+")
 default_list_kv = re.compile(r"(\S+) {(?:([^{}]*))}")
+re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
 
+re_kv = re.compile(r"\S+")
+re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
 
 ### this searches looks for values that would construct a {k : []} container ###
 ltm_list_keys = [
@@ -68,7 +71,7 @@ def context_default(line: str):
         k, v = default_quotes.search(line).groups()
         return {k: v}
     if re.findall(r"{.*}", line):
-        k, v = default_list_key_re.search(line).groups()
+        k, v = default_list_kv.search(line).groups()
         if v != " ":
             v = v.split()
         else:
