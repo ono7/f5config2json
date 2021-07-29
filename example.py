@@ -9,7 +9,7 @@
 from json import dumps
 from tojson import parse_policy
 
-ltm_re = r"(?sm)((^ltm.*?^\}\n\})|^\w.*?(?=^\w|\Z))"
+ltm_re = r"(?sm)((^ltm rule.*?^\}\n\})|^\w.*?(?=^\w|\Z))"
 
 lines = """ltm virtual export_me {
     description "This is for export.  Export this description."
@@ -58,11 +58,16 @@ when this {
 }
 """
 
+lines3 = """ltm virtual "/Common/Spaced out" {
+    description "This is for export.  Export this description."
+    destination 10.1.30.30:https
+}"""
+
 # print(dumps(parse_policy(lines, b64=True), indent=2))
-data = [lines, irule]
+data = [lines, irule, lines3]
 encode = ["ltm:rule"]
 for d in data:
-    print(dumps(parse_policy(d, encode_this=encode), indent=2))
+    print(dumps(parse_policy(d, encode_this=encode, b64=True), indent=2))
 
 # parsed = {"ltm:virtual": {}}
 # for block in blocks:

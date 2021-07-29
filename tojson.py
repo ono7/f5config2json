@@ -22,90 +22,8 @@
 import re
 from base64 import b64encode
 from typing import Tuple, List, Any
-from sys import exit
 
-### regex compile ###
-re_quotes = re.compile(r"\b(\S+) (.*)")
-re_kv = re.compile(r"\S+")
-re_keys = re.compile(r"[^{} ]+")
-re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
-re_special = re.compile(r"(rules \{|log-settings \{|\b\d+\b {)")
-
-# handle cases where the stanza key represents a list to follow
-list_keys = [
-    "rules",
-    "log-settings",
-    "\d+ {",
-    "attributes",
-    "assertion-consumer-services",
-]
-list_keys = sorted(list_keys, key=len, reverse=True)
-list_keys = "|".join(list_keys)
-value_is_list = re.compile(f"({list_keys})")
-
-## policy helpers ##
-
-
-def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> object:
-    """parse a stanza object from f5 and return python dict
-    optionaly embed original config block encoded in base64
-    parse_policy(data, b64=True)
-    """
-    if not encode_this:
-        encode_this = []
-    lines = clean_data_chunk(policy).splitlines()
-    if len(lines) == 1:
-        return parse_singleton(lines[0])
-    storage_stack: List[object] = []
-    obj_stack: List[object] = []
-    for line in lines:
-        if line.strip() == "}" and this_stack.is_balanced():
-            if storage_stack[-1].parent and len(storage_stack) != 1:
-                storage_stack[-1].parent.update(storage_stack[-1].get_store())
-                storage_stack.pop()
-                this_stack = obj_stack.pop()
-            continue
-        if line.strip() == "}":
-            this_stack.update_state(line)
-            if this_stack.is_balanced() and len(obj_stack) != 0:
-                this_stack = obj_stack.pop()
-                if storage_stack[-1].parent and len(storage_stack) != 1:
-                    storage_stack[-1].parent.update(storage_stack[-1].get_store())
-                    storage_stack.pop()
-                continue
-        if line.endswith("{"):
-            this_stack = create_new_objects(line, storage_stack, obj_stack)
-            if storage_stack[-1].k1 in encode_this:
-                storage_stack[-1].update({"b64": f"{b64encode(policy.encode())}"})
-                return storage_stack[0].get_store()
-            continue
-        storage_stack[-1].update(parse_kv(line))
-    if b64:
-        storage_stack[0].update({"b64": f"{b64encode(policy.encode())}"})
-    return storage_stack[0].get_store()
-
-
-def clean_data_chunk(chunk: str) -> str:
-    """ remove space around chunk and remove empty lines """
-    empty_lines = re.compile(r"[\n]+")
-    c = chunk.strip()
-    return empty_lines.sub("\n", c)
-
-
-def create_new_objects(line: str, storage_stack: object, obj_stack: object) -> object:
-    """creates new storage and this_stack objects
-    if the the storage this_stack contains a previous object
-    this current object's parent attribute is set
-    this allows a direct update once we encounter and end of a block }
-    """
-    new_node = Storage(*is_parent(line))
-    if len(storage_stack) > 0:
-        new_node.parent = storage_stack[-1]
-    storage_stack.append(new_node)
-    new_stack = Stack()
-    new_stack.update_state(line)
-    obj_stack.append(new_stack)
-    return new_stack
+### rock stars ###
 
 
 class Storage:
@@ -173,6 +91,55 @@ class Stack:
 
     def get_stack(self):
         return self.stack
+
+
+### regex compile ###
+
+re_quotes = re.compile(r"\b(\S+) (.*)")
+re_kv = re.compile(r"\S+")
+# re_keys = re.compile(r"[^{} ]+")
+# re_keys below covers cases where there are spaces in "/Common/space here"
+re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
+re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
+
+store_contex = {"ltm:virtual": ["stuff"]}
+
+list_keys = [
+    "rules",
+    "log-settings",
+    "\d+ {",
+    "attributes",
+    "assertion-consumer-services",
+]
+list_keys = sorted(list_keys, key=len, reverse=True)
+list_keys = "|".join(list_keys)
+value_is_list = re.compile(f"({list_keys})")
+
+## policy helpers ##
+
+
+def clean_data_chunk(chunk: str) -> str:
+    """ remove space around chunk and remove empty lines """
+    empty_lines = re.compile(r"[\n]+")
+    c = chunk.strip()
+    # TODO: 07/28/2021 | can we fix line breaks with trailing whitespace here?
+    return empty_lines.sub("\n", c)
+
+
+def create_new_objects(line: str, storage_stack: object, obj_stack: object) -> object:
+    """creates new storage and this_stack objects
+    if the obj_stack contains a previous object
+    this new_node object's parent attribute is set
+    this allows a direct update once we encounter and end of a stanza block
+    """
+    new_node = Storage(*is_parent(line))
+    if len(storage_stack) > 0:
+        new_node.parent = storage_stack[-1]
+    storage_stack.append(new_node)
+    new_stack = Stack()
+    new_stack.update_state(line)
+    obj_stack.append(new_stack)
+    return new_stack
 
 
 ### parsers ###
@@ -245,10 +212,45 @@ def parse_kv(line: str) -> dict:
         raise
 
 
-# def get_container_type(current_line, next_line):
-#     """ not implemented, hold for later use """
-#     l1 = current_line.strip()
-#     l2 = next_line.strip()
-#     if re.search("{(\s*?)?}$", l1) and re.search("^{", l2):
-#         return {}, []
-#     return {}
+def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> object:
+    """parse a stanza object from f5 and return python dict
+
+    b64: optionaly embed original config block encoded in base64
+        parse_policy(data, b64=True)
+
+    encode_this: list of object parent keys e.g. "ltm:rule" to by pass parsing
+        and skip to encoding. avoids building complex expressions for data that
+        is not necessary for migration correlation.
+    """
+    if not encode_this:
+        encode_this = []
+    lines = clean_data_chunk(policy).splitlines()
+    if len(lines) == 1:
+        return parse_singleton(lines[0])
+    storage_stack: List[object] = []
+    obj_stack: List[object] = []
+    for line in lines:
+        if line.strip() == "}" and this_stack.is_balanced():
+            if storage_stack[-1].parent and len(storage_stack) != 1:
+                storage_stack[-1].parent.update(storage_stack[-1].get_store())
+                storage_stack.pop()
+                this_stack = obj_stack.pop()
+            continue
+        if line.strip() == "}":
+            this_stack.update_state(line)
+            if this_stack.is_balanced() and len(obj_stack) != 0:
+                this_stack = obj_stack.pop()
+                if storage_stack[-1].parent and len(storage_stack) != 1:
+                    storage_stack[-1].parent.update(storage_stack[-1].get_store())
+                    storage_stack.pop()
+                continue
+        if line.endswith("{"):
+            this_stack = create_new_objects(line, storage_stack, obj_stack)
+            if storage_stack[-1].k1 in encode_this:
+                storage_stack[-1].update({"b64": f"{b64encode(policy.encode())}"})
+                return storage_stack[0].get_store()
+            continue
+        storage_stack[-1].update(parse_kv(line))
+    if b64:
+        storage_stack[0].update({"b64": f"{b64encode(policy.encode())}"})
+    return storage_stack[0].get_store()
