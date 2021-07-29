@@ -27,7 +27,7 @@ from typing import Tuple, List, Any
 
 
 class Storage:
-    """storage container for stanza configs
+    """Storage container
     relies on results from is_parent function to create
     an appropiate data structure for the type of node
     currently in the stack
@@ -61,7 +61,7 @@ class Storage:
 
 
 class Stack:
-    """ returns a stack, keeps track of stanza config blocks x{ }"""
+    """ returns a stack that keeps track of stanza schema start and end block"""
 
     def __init__(self):
         self.stack = []
@@ -119,11 +119,17 @@ value_is_list = re.compile(f"({list_keys})")
 
 
 def clean_data_chunk(chunk: str) -> str:
-    """ remove space around chunk and remove empty lines """
+    """remove space around chunk and remove empty lines
+
+    clean_empty_lines: removes any empty lines only [\n] is supported
+
+    clean_broken_line: there are cases where the F5 config has lines that are
+        broken specially seen in long quoated strings, this fixes it by replacing
+        the trailing space and newline with a single space (this might require more testing)
+    """
     clean_empty_lines = re.compile(r"[\n]+")
     clean_broken_line = re.compile(r"\s+\n")
     c = chunk.strip()
-    # TODO: 07/28/2021 | can we fix line breaks with trailing whitespace here?
     c = clean_empty_lines.sub("\n", c)
     return clean_broken_line.sub(" ", c)
 
