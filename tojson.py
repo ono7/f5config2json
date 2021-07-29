@@ -255,10 +255,12 @@ def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> ob
         if line.endswith("{"):
             this_stack = create_new_objects(line, storage_stack, obj_stack)
             if storage_stack[-1].k1 in encode_this:
-                storage_stack[-1].update({"b64": f"{b64encode(policy.encode())}"})
+                storage_stack[-1].update(
+                    {"b64": f"{b64encode(policy.encode()).decode()}"}
+                )
                 return storage_stack[0].get_store()
             continue
         storage_stack[-1].update(parse_kv(line))
     if b64:
-        storage_stack[0].update({"b64": f"{b64encode(policy.encode())}"})
+        storage_stack[0].update({"b64": f"{b64encode(policy.encode()).decode()}"})
     return storage_stack[0].get_store()
