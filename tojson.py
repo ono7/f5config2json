@@ -22,7 +22,7 @@
 import re
 from base64 import b64encode
 from typing import Tuple, List, Any
-from context import kv_context
+from context import kv_context, storage_context
 
 ### rock stars ###
 
@@ -107,7 +107,6 @@ re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
 store_contex = {"ltm:virtual": ["stuff"]}
 
 list_keys = [
-    "rules",
     "images",
     "variables",
     "rows",

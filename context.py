@@ -14,12 +14,16 @@ default_kv = re.compile(r"\S+")
 default_list_kv = re.compile(r"(\S+) {(?:([^{}]*))}")
 
 ### this searches looks for values that would construct a {k : []} container ###
+storage_context = {
+    "ltm:policy": {"rules": []},
+    "apm:sso:saml-sp-connector": {"assertion-consumer-services": []},
+}
+
+
 ltm_list_keys = [
     "rules",
-    "images",
     "variables",
     "rows",
-    "log-settings",
     "\d+ {",
     "attributes",
     "assertion-consumer-services",
