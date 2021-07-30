@@ -191,6 +191,43 @@ def is_parent(line: str, context: str = None) -> Tuple:
         if len(results) > 1:
             level2 = results.pop(-1)
             level1 = ":".join(results)
+            try:
+                level2 = storage_context.get(context).get(level2, level2)
+                return level1, level2
+            except:
+                return level1, level2
+        # if level1 key is in this, return a list
+        # if value_is_list.search(results[0]):
+        #     return results[0], []
+        level2 = None
+        try:
+            level1 = storage_context.get(context).get(level1, level1)
+            return level1, level2
+        except:
+            level1 = results[0]
+        return level1, level2
+
+
+def back_is_parent(line: str, context: str = None) -> Tuple:
+    """if the line ends with  `word {`, this represents the start of a
+    new objectk if a line is multiple words:
+        `level1 word2 /Common/level2 {}`
+    we pair the first 2 words to represent the parent key
+    and return a nested structure:
+        -> {"level1:word2" : {"/Common/level2" : {}}
+    other wise if the line is `level1 {}`
+        -> {"level1" : {}}
+    this function works together with Storage to create the correct
+    data structure for the current object
+    """
+    # TODO: 07/30/2021 | implement look up here on right most key when available
+    if line.strip() == "{":
+        return None, {}
+    results = re_keys.findall(line)
+    if results:
+        if len(results) > 1:
+            level2 = results.pop(-1)
+            level1 = ":".join(results)
             return level1, level2
         # if level1 key is in this, return a list
         if value_is_list.search(results[0]):
@@ -239,7 +276,6 @@ def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> ob
         return parse_singleton(lines[0])
     storage_stack: List[object] = []
     obj_stack: List[object] = []
-    __import__("pdb").set_trace()
     context = get_context(lines[0])
     for line in lines:
         if line.strip() == "}" and this_stack.is_balanced():
@@ -257,7 +293,9 @@ def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> ob
                     storage_stack.pop()
                 continue
         if line.endswith("{"):
-            this_stack = create_new_objects(line, storage_stack, obj_stack)
+            this_stack = create_new_objects(
+                line, storage_stack, obj_stack, context=context
+            )
             if storage_stack[-1].k1 in encode_this:
                 storage_stack[-1].update(
                     {"b64": f"{b64encode(policy.encode()).decode()}"}
