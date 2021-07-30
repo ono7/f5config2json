@@ -92,6 +92,9 @@ line_context_pool = {"ltm:pool": context_ltm_pool}
 storage_context = {
     "ltm:policy": {"rules": []},
     "apm:sso:saml-sp-connector": {"assertion-consumer-services": []},
+    "apm:policy:agent:variable-assign": {"variables": []},
+    "apm:profile:access": {"log-settings": []},
+    "apm:sso:form-based": {"form-field": []},
 }
 
 
