@@ -178,6 +178,7 @@ def is_parent(line: str) -> Tuple:
     this function works together with Storage to create the correct
     data structure for the current object
     """
+    # TODO: 07/30/2021 | implement look up here on right most key when available
     if line.strip() == "{":
         return None, {}
     results = re_keys.findall(line)
@@ -191,6 +192,25 @@ def is_parent(line: str) -> Tuple:
             return results[0], []
         level1, level2 = results[0], None
     return level1, level2
+
+
+def get_context(line: str) -> str:
+    """get context for for this object
+    e.g.
+        ltm pool /common/awesome/pool { <- root_key = "ltm:pool"
+            somekey somevalue
+        }
+    """
+    if line.strip() == "{":
+        return "no_root_key"
+    results = re_keys.findall(line)
+    if results:
+        if len(results) > 1:
+            _ = results.pop(-1)
+            root_key = ":".join(results)
+            return root_key
+        root_key = results[0]
+    return root_key
 
 
 def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> object:
