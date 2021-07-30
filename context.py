@@ -13,14 +13,6 @@ default_quotes = re.compile(r"\b(\S+) (.*)")
 default_kv = re.compile(r"\S+")
 default_list_kv = re.compile(r"(\S+) {(?:([^{}]*))}")
 
-# this lookup provides context aware data containers, default is type -> dict
-# so this mapping is really only good for places where we need a list instead of a {}
-storage_context = {
-    "ltm:policy": {"rules": []},
-    "apm:sso:saml-sp-connector": {"assertion-consumer-services": []},
-}
-
-
 # ltm_list_keys = [
 #     "rules",
 #     "variables",
@@ -89,8 +81,18 @@ def context_default(line: str):
         return {k[0]: None}
 
 
-# >>>>>>>>> no context aweare functions below this line <<<<<<<<<<<< #
+### context mappings ###
+
+# returns a context aware funtion that deals with parsing a "key value" line item
+# if none is found, the implementation should return a default in this case  context_default()
 line_context_pool = {"ltm:pool": context_ltm_pool}
+
+# this lookup provides context aware data containers, default is type -> dict
+# so this mapping is really only good for places where we need a list instead of a {}
+storage_context = {
+    "ltm:policy": {"rules": []},
+    "apm:sso:saml-sp-connector": {"assertion-consumer-services": []},
+}
 
 
 def kv_context(line: str, context: str) -> dict:
