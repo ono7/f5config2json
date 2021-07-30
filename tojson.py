@@ -196,9 +196,10 @@ def is_parent(line: str, context: str = None) -> Tuple:
                 return level1, level2
             except:
                 return level1, level2
-        # if level1 key is in this, return a list
-        # if value_is_list.search(results[0]):
-        #     return results[0], []
+        # if we got this far we expect level2 to be type None
+        # we only need to do a level1 lookup on the storage_context to see if we
+        # should return a list, or it self as a default value type(str) other
+        # wise Storage class will take care of choosing the correct structure for this object
         level2 = None
         try:
             level1 = storage_context.get(context).get(level1, level1)
