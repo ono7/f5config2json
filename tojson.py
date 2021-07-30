@@ -183,7 +183,6 @@ def is_parent(line: str, context: str = None) -> Tuple:
     this function works together with Storage to create the correct
     data structure for the current object
     """
-    # TODO: 07/30/2021 | implement look up here on right most key when available
     if line.strip() == "{":
         return None, {}
     results = re_keys.findall(line)
@@ -206,35 +205,12 @@ def is_parent(line: str, context: str = None) -> Tuple:
             return level1, level2
         except:
             level1 = results[0]
-        return level1, level2
-
-
-def back_is_parent(line: str, context: str = None) -> Tuple:
-    """if the line ends with  `word {`, this represents the start of a
-    new objectk if a line is multiple words:
-        `level1 word2 /Common/level2 {}`
-    we pair the first 2 words to represent the parent key
-    and return a nested structure:
-        -> {"level1:word2" : {"/Common/level2" : {}}
-    other wise if the line is `level1 {}`
-        -> {"level1" : {}}
-    this function works together with Storage to create the correct
-    data structure for the current object
-    """
-    # TODO: 07/30/2021 | implement look up here on right most key when available
-    if line.strip() == "{":
-        return None, {}
-    results = re_keys.findall(line)
-    if results:
-        if len(results) > 1:
-            level2 = results.pop(-1)
-            level1 = ":".join(results)
+        try:
+            # TODO: 07/30/2021 | level1 or level2 for default?
+            level2 = storage_context.get(context).get(level1, level1)
             return level1, level2
-        # if level1 key is in this, return a list
-        if value_is_list.search(results[0]):
-            return results[0], []
-        level1, level2 = results[0], None
-    return level1, level2
+        except:
+            return level1, level2
 
 
 def get_context(line: str) -> str:
