@@ -8,6 +8,18 @@
 
 from json import dumps
 from tojson import parse_policy
+import logging
+
+logging.basicConfig(
+    format="%(levelname)s %(asctime)s %(name)s : %(message)s",
+    datefmt="%m/%d/%Y %I:%M:%S",
+    filename="error.log",
+    filemode="w",
+    level=logging.WARNING,
+)
+logger = logging.getLogger(__name__)
+# logger.error(e, exc_info=True)
+
 
 ltm_re = r"(?sm)((^ltm rule.*?^\}\n\})|^\w.*?(?=^\w|\Z))"
 
@@ -78,10 +90,13 @@ lines = """ltm pool /test/context {
 }
 """
 # print(dumps(parse_policy(lines, b64=True), indent=2))
-data = [lines]
+data = [lines, lines3]
 encode = ["ltm:rule"]
 for d in data:
-    print(dumps(parse_policy(d, encode_this=encode, b64=True), indent=2))
+    try:
+        print(dumps(parse_policy(d, encode_this=encode, b64=True), indent=2))
+    except:
+        logger.warning(d, exc_info=True)
 
 # parsed = {"ltm:virtual": {}}
 # for block in blocks:
