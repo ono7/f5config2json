@@ -95,6 +95,7 @@ storage_context = {
     "apm:policy:agent:variable-assign": {"variables": []},
     "apm:profile:access": {"log-settings": []},
     "apm:sso:form-based": {"form-field": []},
+    "sys:application:service": {"rows": []},
 }
 
 
