@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+tags
+.tags
 test2.py
 test1.py
 # Distribution / packaging
