@@ -303,7 +303,7 @@ def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> ob
                 )
                 return storage_stack[0].get_store()
             continue
-        storage_stack[-1].update(kv_context(line, context=storage_stack[0].k1))
+        storage_stack[-1].update(kv_context(line, context=context))
     if b64:
         storage_stack[0].update({"b64": f"{b64encode(policy.encode()).decode()}"})
     return storage_stack[0].get_store()
