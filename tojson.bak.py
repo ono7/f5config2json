@@ -32,36 +32,21 @@ class Storage:
     relies on results from is_parent function to create
     an appropiate data structure for the type of node
     currently in the stack
-    1. create the object
-    2. set the storage type based on kv lookup
     """
 
-    def __init__(self, root_key: str = "na"):
-        self.k1 = None
-        self.k2 = None
+    def __init__(self, k1: str = None, k2: Any = None):
+        self.k1 = k1
+        self.k2 = k2
         self.parent = None
-        self.root_key = root_key
-        self.storage = None
-        # if isinstance(k2, list):
-        #     self.storage = {k1: []}
-        # elif isinstance(k2, dict):
-        #     self.storage = {}
-        # elif isinstance(k2, str):
-        #     self.storage = {k1: {k2: {}}}
-        # else:
-        #     self.storage = {k1: {}}
-
-    def init(self, k1, k2):
-        if k2 is not None:
-            ret = storage_context.get(self.root_key, {})
-            if isinstance(k2, list):
-                self.storage = {k1: ret}
-            elif isinstance(k2, dict):
-                self.storage = {}
-            elif isinstance(k2, str):
-                self.storage = {k1: {k2: {}}}
-            else:
-                self.storage = {k1: {}}
+        self.root = None
+        if isinstance(k2, list):
+            self.storage = {k1: []}
+        elif isinstance(k2, dict):
+            self.storage = {}
+        elif isinstance(k2, str):
+            self.storage = {k1: {k2: {}}}
+        else:
+            self.storage = {k1: {}}
 
     def update(self, data: dict) -> None:
         if isinstance(self.k2, str):
@@ -119,6 +104,7 @@ re_kv = re.compile(r"\S+")
 re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
 re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
 
+store_contex = {"ltm:virtual": ["stuff"]}
 
 list_keys = [
     "images",
