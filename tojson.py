@@ -138,13 +138,18 @@ def clean_data_chunk(chunk: str) -> str:
     return clean_broken_line.sub(" ", c)
 
 
-def create_new_objects(line: str, storage_stack: object, obj_stack: object) -> object:
+def create_new_objects(
+    line: str, storage_stack: object, obj_stack: object, context: str = None
+) -> object:
     """creates new storage and this_stack objects
     if the obj_stack contains a previous object
     this new_node object's parent attribute is set
     this allows a direct update once we encounter and end of a stanza block
+
+    context: root key for this config block
+
     """
-    new_node = Storage(*is_parent(line))
+    new_node = Storage(*is_parent(line, context=context))
     if len(storage_stack) > 0:
         new_node.parent = storage_stack[-1]
     storage_stack.append(new_node)
@@ -166,7 +171,7 @@ def parse_singleton(data: str) -> object:
     return new_node.get_store()
 
 
-def is_parent(line: str) -> Tuple:
+def is_parent(line: str, context: str = None) -> Tuple:
     """if the line ends with  `word {`, this represents the start of a
     new objectk if a line is multiple words:
         `level1 word2 /Common/level2 {}`
@@ -234,6 +239,8 @@ def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> ob
         return parse_singleton(lines[0])
     storage_stack: List[object] = []
     obj_stack: List[object] = []
+    __import__("pdb").set_trace()
+    context = get_context(lines[0])
     for line in lines:
         if line.strip() == "}" and this_stack.is_balanced():
             if storage_stack[-1].parent and len(storage_stack) != 1:
