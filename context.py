@@ -96,6 +96,7 @@ storage_context = {
     "apm:policy:customization-group": {"images": []},
     "apm:profile:access": {"log-settings": []},
     "apm:sso:form-based": {"form-field": []},
+    "apm:sso:saml": {"attributes": []},
     "sys:application:service": {"rows": []},
 }
 
