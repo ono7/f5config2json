@@ -94,7 +94,7 @@ storage_context = {
     "apm:sso:saml-sp-connector": {"assertion-consumer-services": []},
     "apm:policy:agent:variable-assign": {"variables": []},
     "apm:policy:customization-group": {"images": []},
-    "apm:policy:policy-tem": {"rules": []},
+    "apm:policy:policy-item": {"rules": []},
     "apm:profile:access": {"log-settings": []},
     "apm:sso:form-based": {"form-field": []},
     "apm:sso:saml": {"attributes": []},
