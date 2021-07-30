@@ -93,6 +93,7 @@ storage_context = {
     "ltm:policy": {"rules": []},
     "apm:sso:saml-sp-connector": {"assertion-consumer-services": []},
     "apm:policy:agent:variable-assign": {"variables": []},
+    "apm:policy:customization-group": {"images": []},
     "apm:profile:access": {"log-settings": []},
     "apm:sso:form-based": {"form-field": []},
     "sys:application:service": {"rows": []},
