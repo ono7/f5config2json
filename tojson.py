@@ -207,7 +207,7 @@ def is_parent(line: str, context: str = None) -> Tuple:
             level1 = results[0]
         try:
             # TODO: 07/30/2021 | level1 or level2 for default?
-            level2 = storage_context.get(context).get(level1, level1)
+            level2 = storage_context.get(context).get(level1, level2)
             return level1, level2
         except:
             return level1, level2
