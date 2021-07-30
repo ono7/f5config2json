@@ -13,29 +13,31 @@ default_quotes = re.compile(r"\b(\S+) (.*)")
 default_kv = re.compile(r"\S+")
 default_list_kv = re.compile(r"(\S+) {(?:([^{}]*))}")
 
-### this searches looks for values that would construct a {k : []} container ###
-# TODO: 07/29/2021 | upate looksup so we use storage_context[self.root_key][k2] or k1
+# this lookup provides context aware data containers, default is type -> dict
+# so this mapping is really only good for places where we need a list instead of a {}
 storage_context = {
     "ltm:policy": {"rules": []},
     "apm:sso:saml-sp-connector": {"assertion-consumer-services": []},
 }
 
 
-ltm_list_keys = [
-    "rules",
-    "variables",
-    "rows",
-    "\d+ {",
-    "attributes",
-    "assertion-consumer-services",
-]
-default_list_key_pre = sorted(ltm_list_keys, key=len, reverse=True)
-default_list_key_pre = "|".join(default_list_key_pre)
-default_list_key_re = re.compile(f"({default_list_key_pre})")
+# ltm_list_keys = [
+#     "rules",
+#     "variables",
+#     "rows",
+#     "\d+ {",
+#     "attributes",
+#     "assertion-consumer-services",
+# ]
+# default_list_key_pre = sorted(ltm_list_keys, key=len, reverse=True)
+# default_list_key_pre = "|".join(default_list_key_pre)
+# default_list_key_re = re.compile(f"({default_list_key_pre})")
 
 re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
 
-### context aware definitions based on root key name ###
+### context aware functions to parse k, v pairs inside stanza block
+
+# TODO: 07/30/2021 | fix some repetitive code at some point to steamline creating a new context function
 
 
 def context_ltm_pool(line: str):
@@ -87,9 +89,13 @@ def context_default(line: str):
         return {k[0]: None}
 
 
+# >>>>>>>>> no context aweare functions below this line <<<<<<<<<<<< #
 line_context_pool = {"ltm:pool": context_ltm_pool}
 
 
-def kv_context(line: str, context: str):
+def kv_context(line: str, context: str) -> dict:
+    """gets a context aware function from line_context_pool mapping
+    parses the line and returns the values as {k: v}
+    """
     parser = line_context_pool.get(context, context_default)
     return parser(line)
