@@ -206,7 +206,6 @@ def is_parent(line: str, context: str = None) -> Tuple:
         except:
             level1 = results[0]
         try:
-            # TODO: 07/30/2021 | level1 or level2 for default?
             level2 = storage_context.get(context).get(level1, level2)
             return level1, level2
         except:
@@ -216,7 +215,7 @@ def is_parent(line: str, context: str = None) -> Tuple:
 def get_context(line: str) -> str:
     """get context for for this object
     e.g.
-        ltm pool /common/awesome/pool { <- root_key = "ltm:pool"
+        ltm pool /common/awesome/pool { <- context = "ltm:pool"
             somekey somevalue
         }
     """
