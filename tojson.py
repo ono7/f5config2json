@@ -254,6 +254,8 @@ def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> ob
     obj_stack: List[object] = []
     context = get_context(lines[0])
     for line in lines:
+        if 'this' in line:
+            __import__("ipdb").set_trace(context=5)
         if line.strip() == "}" and this_stack.is_balanced():
             if storage_stack[-1].parent and len(storage_stack) != 1:
                 storage_stack[-1].parent.update(storage_stack[-1].get_store())

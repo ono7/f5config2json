@@ -77,8 +77,10 @@ Export this description.
     destination 10.1.30.30:https
 }"""
 
+# TODO: 07/31/2021 | fix "key" value
 lines = """ltm pool /test/context {
     description "testing context"
+    "this is a key" test
     load-balancing-mode least-connections-members
     members {
         /common/test/member {
