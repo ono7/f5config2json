@@ -80,7 +80,8 @@ class Stack:
             self.stack.append("{")
             self.len += 1
             self.by_who = line
-        elif self.current.strip() == "}":
+        # elif self.current.strip() == "}":
+        elif self.current == "}":
             self.stack.pop()
             self.len -= 1
             if self.len == 0:
@@ -183,7 +184,7 @@ def is_parent(line: str, context: str = None) -> Tuple:
     this function works together with Storage to create the correct
     data structure for the current object
     """
-    if line.strip() == "{":
+    if line == "{":
         return None, {}
     results = re_keys.findall(line)
     if results:
@@ -254,15 +255,16 @@ def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> ob
     obj_stack: List[object] = []
     context = get_context(lines[0])
     for line in lines:
-        if 'this' in line:
-            __import__("ipdb").set_trace(context=5)
-        if line.strip() == "}" and this_stack.is_balanced():
+        line = line.strip()
+        # if 'this' in line:
+        #     __import__("ipdb").set_trace(context=5)
+        if line == "}" and this_stack.is_balanced():
             if storage_stack[-1].parent and len(storage_stack) != 1:
                 storage_stack[-1].parent.update(storage_stack[-1].get_store())
                 storage_stack.pop()
                 this_stack = obj_stack.pop()
             continue
-        if line.strip() == "}":
+        if line == "}":
             this_stack.update_state(line)
             if this_stack.is_balanced() and len(obj_stack) != 0:
                 this_stack = obj_stack.pop()

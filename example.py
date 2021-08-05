@@ -5,6 +5,8 @@
 
     __author__ = 'Jose Lima'
 """
+# TODO: 07/31/2021 | fix issue where k, v, k= "some long string with spaces"
+# TODO: 07/31/2021 | add key filters so they are denormalized ahead of time
 
 from json import dumps
 from tojson import parse_policy
@@ -64,7 +66,7 @@ lines = """ltm virtual export_me {
 irule = """ltm rule /Common/test {
 # test
 when this {
-  isthis working?
+  isthis working? thest
  }
 }
 }
@@ -77,10 +79,9 @@ Export this description.
     destination 10.1.30.30:https
 }"""
 
-# TODO: 07/31/2021 | fix "key" value
+# TODO: 07/31/2021 | fix "key a b c" value
 lines = """ltm pool /test/context {
     description "testing context"
-    "this is a key" test
     load-balancing-mode least-connections-members
     members {
         /common/test/member {
