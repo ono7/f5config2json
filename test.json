@@ -1,0 +1,30 @@
+{
+  "ltm:pool": {
+    "/test/context": {
+      "description": "\"testing context\"",
+      "load-balancing-mode": "least-connections-members",
+      "members": {
+        "/common/test/member": {
+          "address": "1.1.1.1",
+          "monitor": [
+            "/test/monitor",
+            "/test/monitor/2"
+          ]
+        }
+      },
+      "service-downaction": "reset",
+      "b64": "bHRtIHBvb2wgL3Rlc3QvY29udGV4dCB7CiAgICBkZXNjcmlwdGlvbiAidGVzdGluZyBjb250ZXh0IgogICAgbG9hZC1iYWxhbmNpbmctbW9kZSBsZWFzdC1jb25uZWN0aW9ucy1tZW1iZXJzCiAgICBtZW1iZXJzIHsKICAgICAgICAvY29tbW9uL3Rlc3QvbWVtYmVyIHsKICAgICAgICAgICAgYWRkcmVzcyAxLjEuMS4xCiAgICAgICAgICAgIG1vbml0b3IgL3Rlc3QvbW9uaXRvciBhbmQgL3Rlc3QvbW9uaXRvci8yCiAgICAgICAgfQogICAgfQogICAgc2VydmljZS1kb3duYWN0aW9uIHJlc2V0Cn0K",
+      "from_device_id": "mydevice01"
+    }
+  }
+}
+{
+  "ltm:virtual": {
+    "\"/Common/Spaced out\"": {
+      "description": "\"this line is broken. Export this description. \"",
+      "destination": "10.1.30.30:https",
+      "b64": "bHRtIHZpcnR1YWwgIi9Db21tb24vU3BhY2VkIG91dCIgewogICAgZGVzY3JpcHRpb24gInRoaXMgbGluZSBpcyBicm9rZW4uICAKRXhwb3J0IHRoaXMgZGVzY3JpcHRpb24uIAoiCiAgICBkZXN0aW5hdGlvbiAxMC4xLjMwLjMwOmh0dHBzCn0=",
+      "from_device_id": "mydevice01"
+    }
+  }
+}
