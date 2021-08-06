@@ -32,6 +32,27 @@ re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
 # TODO: 07/30/2021 | fix some repetitive code at some point to steamline creating a new context function
 
 
+def default_line_parse(line):
+    """ default line parser, returns null for value if no match """
+    try:
+        k, v = default_kv.findall(line)
+    except ValueError:
+        # deals with single items in a line that are not k, v pairs
+        k = default_kv.findall(line)[0]
+        v = None
+    return k, v
+
+
+def default_line_list(line):
+    """ deals with list type lines e.g. 'item { a b c }' """
+    k, v = default_list_kv.search(line).groups()
+    if v != " ":
+        v = v.split()
+    else:
+        v = []
+    return k, v
+
+
 def context_ltm_pool(line: str):
     monitor = re.compile(r"(monitor) (.*)")
     if line.startswith("monitor"):
@@ -44,18 +65,9 @@ def context_ltm_pool(line: str):
     elif line.endswith('"'):
         k, v = default_quotes.search(line).groups()
     elif re.findall(r"{.*}", line):
-        k, v = default_list_kv.search(line).groups()
-        if v != " ":
-            v = v.split()
-        else:
-            v = []
+        k, v = default_line_list(line)
     else:
-        try:
-            k, v = default_kv.findall(line)
-        except ValueError:
-            # deals with single items in a line that are not k, v pairs
-            k = default_kv.findall(line)[0]
-            v = None
+        k, v = default_line_parse(line)
     return {k: v}
 
 
@@ -63,18 +75,9 @@ def context_default(line: str):
     if line.endswith('"'):
         k, v = default_quotes.search(line).groups()
     elif re.findall(r"{.*}", line):
-        k, v = default_list_kv.search(line).groups()
-        if v != " ":
-            v = v.split()
-        else:
-            v = []
+        k, v = default_line_list(line)
     else:
-        try:
-            k, v = default_kv.findall(line)
-        except ValueError:
-            # deals with single items in a line that are not k, v pairs
-            k = default_kv.findall(line)[0]
-            v = None
+        k, v = default_line_parse(line)
     return {k: v}
 
 

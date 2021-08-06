@@ -282,7 +282,6 @@ def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> ob
                 )
                 return storage_stack[0].get_store()
             continue
-        # __import__("ipdb").set_trace(context=5)
         storage_stack[-1].update(kv_context(line, context=context))
     if b64:
         storage_stack[0].update({"b64": f"{b64encode(policy.encode()).decode()}"})
