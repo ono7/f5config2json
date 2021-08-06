@@ -8,7 +8,7 @@
 """
 import re
 
-### one line parsers ###
+### regex ###
 
 default_quotes = re.compile(r"\b(\S+) (.*)")
 default_kv = re.compile(r"\S+")

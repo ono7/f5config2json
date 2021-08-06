@@ -73,8 +73,8 @@ when this {
 """
 
 lines3 = """ltm virtual "/Common/Spaced out" {
-    description "this line is broken.
-Export this description.
+    description "this line is broken.  
+Export this description. 
 "
     destination 10.1.30.30:https
 }"""
