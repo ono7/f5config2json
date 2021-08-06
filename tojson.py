@@ -269,5 +269,5 @@ def parse_policy(policy: str, b64: bool = False, encode_this: list = None) -> ob
     if b64:
         storage_stack[0].update({"b64": f"{b64encode(policy.encode()).decode()}"})
     # TODO: 08/05/2021 | implement device id
-    storage_stack[0].update({"from_device_id": "mydevice01"})
+    storage_stack[0].update({"device_id": "mydevice01"})
     return storage_stack[0].get_store()

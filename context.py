@@ -88,7 +88,7 @@ def context_default(line: str) -> dict:
 
 # returns a context aware funtion that deals with parsing a "key value" line item
 # if none is found, the implementation should return a default in this case  context_default()
-line_context_pool = {"ltm:pool": context_ltm_pool}
+line_parser_context_pool = {"ltm:pool": context_ltm_pool}
 
 # this lookup provides context aware data containers, default is type -> dict
 # this mapping is really only good for places where we need a list instead of a {}
@@ -105,8 +105,8 @@ storage_context = {
 
 
 def kv_context(line: str, context: str) -> dict:
-    """gets a context aware function from line_context_pool mapping
+    """gets a context aware function from line_parser_context_pool mapping
     parses the line and returns the values as {k: v}
     """
-    parser = line_context_pool.get(context, context_default)
+    parser = line_parser_context_pool.get(context, context_default)
     return parser(line)
