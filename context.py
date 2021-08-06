@@ -41,6 +41,7 @@ def default_line_list(line):
 
 
 def default_line_single_quotes(line):
+    """deals with quoted lines with spaces e.g. '/Common/no name standards' """
     quotes = re.compile(r'("[^"]*")')
     k = quotes.search(line).groups()[0]
     v = None
