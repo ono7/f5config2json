@@ -98,27 +98,10 @@ class Stack:
 
 ### regex compile ###
 
-# re_quotes = re.compile(r"\b(\S+) (.*)")
-# re_kv = re.compile(r"\S+")
-# re_keys = re.compile(r"[^{} ]+")
 # re_keys below covers cases where there are spaces in "/Common/space here"
 re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
-# re_list = re.compile(r"(\S+) {(?:([^{}]*))}")
 
 store_contex = {"ltm:virtual": ["stuff"]}
-
-# list_keys = [
-#     "images",
-#     "variables",
-#     "rows",
-#     "log-settings",
-#     "\d+ {",
-#     "attributes",
-#     "assertion-consumer-services",
-# ]
-# list_keys = sorted(list_keys, key=len, reverse=True)
-# list_keys = "|".join(list_keys)
-# value_is_list = re.compile(f"({list_keys})")
 
 ## policy helpers ##
 
