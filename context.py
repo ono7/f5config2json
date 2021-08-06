@@ -27,9 +27,7 @@ default_list_kv = re.compile(r"(\S+) {(?:([^{}]*))}")
 
 re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
 
-### context aware functions to parse k, v pairs inside stanza block
-
-# TODO: 07/30/2021 | fix some repetitive code at some point to steamline creating a new context function
+### default line parsers ###
 
 
 def default_line_parse(line):
@@ -51,6 +49,9 @@ def default_line_list(line):
     else:
         v = []
     return k, v
+
+
+### context aware functions to parse k, v pairs inside stanza block ###
 
 
 def context_ltm_pool(line: str):
