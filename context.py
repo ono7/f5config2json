@@ -36,7 +36,14 @@ def default_line_list(line):
     if v != " ":
         v = v.split()
     else:
-        v = []
+        v = {}
+    return k, v
+
+
+def default_line_single_quotes(line):
+    quotes = re.compile(r'("[^"]*")')
+    k = quotes.search(line).groups()[0]
+    v = None
     return k, v
 
 
@@ -52,6 +59,8 @@ def context_ltm_pool(line: str):
                 v = v.split(" and ")
         except:
             return {"monitor": []}
+    elif line.startswith('"') and line.endswith('"'):
+        k, v = default_line_single_quotes(line)
     elif line.endswith('"'):
         k, v = default_quotes.search(line).groups()
     elif re.findall(r"{.*}", line):
@@ -62,7 +71,9 @@ def context_ltm_pool(line: str):
 
 
 def context_default(line: str):
-    if line.endswith('"'):
+    if line.startswith('"') and line.endswith('"'):
+        k, v = default_line_single_quotes(line)
+    elif line.endswith('"'):
         k, v = default_quotes.search(line).groups()
     elif re.findall(r"{.*}", line):
         k, v = default_line_list(line)
