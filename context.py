@@ -9,21 +9,10 @@
 import re
 
 ### one line parsers ###
+
 default_quotes = re.compile(r"\b(\S+) (.*)")
 default_kv = re.compile(r"\S+")
 default_list_kv = re.compile(r"(\S+) {(?:([^{}]*))}")
-
-# ltm_list_keys = [
-#     "rules",
-#     "variables",
-#     "rows",
-#     "\d+ {",
-#     "attributes",
-#     "assertion-consumer-services",
-# ]
-# default_list_key_pre = sorted(ltm_list_keys, key=len, reverse=True)
-# default_list_key_pre = "|".join(default_list_key_pre)
-# default_list_key_re = re.compile(f"({default_list_key_pre})")
 
 re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
 
@@ -51,7 +40,7 @@ def default_line_list(line):
     return k, v
 
 
-### context aware functions to parse k, v pairs inside stanza block ###
+### context aware functions to parse k, v pairs ###
 
 
 def context_ltm_pool(line: str):
@@ -89,9 +78,8 @@ def context_default(line: str):
 line_context_pool = {"ltm:pool": context_ltm_pool}
 
 # this lookup provides context aware data containers, default is type -> dict
-# so this mapping is really only good for places where we need a list instead of a {}
+# this mapping is really only good for places where we need a list instead of a {}
 storage_context = {
-    # "ltm:policy": {"rules": []},
     "apm:sso:saml-sp-connector": {"assertion-consumer-services": []},
     "apm:policy:agent:variable-assign": {"variables": []},
     "apm:policy:customization-group": {"images": []},
