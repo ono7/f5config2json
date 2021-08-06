@@ -96,7 +96,7 @@ storage_context = {
     "apm:policy:agent:variable-assign": {"variables": []},
     "apm:policy:customization-group": {"images": []},
     "apm:policy:policy-item": {"rules": []},
-    "apm:profile:access": {"log-settings": []},
+    # "apm:profile:access": {"log-settings": []},
     "apm:sso:form-based": {"form-field": []},
     "apm:sso:saml": {"attributes": []},
     "sys:application:service": {"rows": []},
