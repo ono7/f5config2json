@@ -34,51 +34,48 @@ re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
 
 def context_ltm_pool(line: str):
     monitor = re.compile(r"(monitor) (.*)")
-    if line.strip().startswith("monitor"):
+    if line.startswith("monitor"):
         try:
             k, v = monitor.search(line).groups()
             if v:
-                return {k: v.split(" and ")}
+                v = v.split(" and ")
         except:
             return {"monitor": []}
-
-    if line.endswith('"'):
+    elif line.endswith('"'):
         k, v = default_quotes.search(line).groups()
-        return {k: v}
-    if re.findall(r"{.*}", line):
+    elif re.findall(r"{.*}", line):
         k, v = default_list_kv.search(line).groups()
         if v != " ":
             v = v.split()
         else:
             v = []
-        return {k: v}
-    try:
-        k, v = default_kv.findall(line)
-        return {k: v}
-    except ValueError:
-        # deals with single items in a line that are not k, v pairs
-        k = default_kv.findall(line)
-        return {k[0]: None}
+    else:
+        try:
+            k, v = default_kv.findall(line)
+        except ValueError:
+            # deals with single items in a line that are not k, v pairs
+            k = default_kv.findall(line)[0]
+            v = None
+    return {k: v}
 
 
 def context_default(line: str):
     if line.endswith('"'):
         k, v = default_quotes.search(line).groups()
-        return {k: v}
-    if re.findall(r"{.*}", line):
+    elif re.findall(r"{.*}", line):
         k, v = default_list_kv.search(line).groups()
         if v != " ":
             v = v.split()
         else:
             v = []
-        return {k: v}
-    try:
-        k, v = default_kv.findall(line)
-        return {k: v}
-    except ValueError:
-        # deals with single items in a line that are not k, v pairs
-        k = default_kv.findall(line)
-        return {k[0]: None}
+    else:
+        try:
+            k, v = default_kv.findall(line)
+        except ValueError:
+            # deals with single items in a line that are not k, v pairs
+            k = default_kv.findall(line)[0]
+            v = None
+    return {k: v}
 
 
 ### context mappings ###
