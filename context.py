@@ -52,7 +52,7 @@ def default_line_single_quotes(line: str) -> Tuple:
 ### context aware functions to parse k, v pairs ###
 
 
-def context_ltm_pool(line: str) -> dict:
+def parser_context_ltm_pool(line: str) -> dict:
     monitor = re.compile(r"(monitor) (.*)")
     if line.startswith("monitor"):
         try:
@@ -72,7 +72,7 @@ def context_ltm_pool(line: str) -> dict:
     return {k: v}
 
 
-def context_default(line: str) -> dict:
+def parser_context_default(line: str) -> dict:
     if line.startswith('"') and line.endswith('"'):
         k, v = default_line_single_quotes(line)
     elif line.endswith('"'):
@@ -88,7 +88,7 @@ def context_default(line: str) -> dict:
 
 # returns a context aware funtion that deals with parsing a "key value" line item
 # if none is found, the implementation should return a default in this case  context_default()
-line_parser_context_pool = {"ltm:pool": context_ltm_pool}
+line_parser_context_pool = {"ltm:pool": parser_context_ltm_pool}
 
 # this lookup provides context aware data containers, default is type -> dict
 # this mapping is really only good for places where we need a list instead of a {}
@@ -108,5 +108,5 @@ def kv_context(line: str, context: str) -> dict:
     """gets a context aware function from line_parser_context_pool mapping
     parses the line and returns the values as {k: v}
     """
-    parser = line_parser_context_pool.get(context, context_default)
+    parser = line_parser_context_pool.get(context, parser_context_default)
     return parser(line)
