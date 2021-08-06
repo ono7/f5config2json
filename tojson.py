@@ -58,7 +58,7 @@ class Storage:
         else:
             self.storage[self.k1].update(data)
 
-    def get_store(self):
+    def get_store(self) -> object:
         return self.storage
 
 
@@ -89,10 +89,10 @@ class Stack:
                 self.by_who = line
         return self.state
 
-    def is_balanced(self):
+    def is_balanced(self) -> bool:
         return self.state
 
-    def get_stack(self):
+    def get_stack(self) -> str:
         return self.stack
 
 
