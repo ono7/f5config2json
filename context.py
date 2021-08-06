@@ -7,6 +7,7 @@
 
 """
 import re
+from typing import Tuple
 
 ### regex ###
 
@@ -19,7 +20,7 @@ re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
 ### default line parsers ###
 
 
-def default_line_parse(line: str) -> tuple:
+def default_line_parse(line: str) -> Tuple:
     """ default line parser, returns null for value if no match """
     try:
         k, v = default_kv.findall(line)
@@ -30,7 +31,7 @@ def default_line_parse(line: str) -> tuple:
     return k, v
 
 
-def default_line_list(line: str) -> tuple:
+def default_line_list(line: str) -> Tuple:
     """ deals with list type lines e.g. 'item { a b c }' """
     k, v = default_list_kv.search(line).groups()
     if v != " ":
@@ -40,7 +41,7 @@ def default_line_list(line: str) -> tuple:
     return k, v
 
 
-def default_line_single_quotes(line: str) -> tuple:
+def default_line_single_quotes(line: str) -> Tuple:
     """deals with quoted lines with spaces e.g. '/Common/no name standards' """
     quotes = re.compile(r'("[^"]*")')
     k = quotes.search(line).groups()[0]
