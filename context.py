@@ -92,11 +92,11 @@ line_context_pool = {"ltm:pool": context_ltm_pool}
 # this lookup provides context aware data containers, default is type -> dict
 # this mapping is really only good for places where we need a list instead of a {}
 storage_context = {
+    # "apm:profile:access": {"log-settings": []},
     "apm:sso:saml-sp-connector": {"assertion-consumer-services": []},
     "apm:policy:agent:variable-assign": {"variables": []},
     "apm:policy:customization-group": {"images": []},
     "apm:policy:policy-item": {"rules": []},
-    # "apm:profile:access": {"log-settings": []},
     "apm:sso:form-based": {"form-field": []},
     "apm:sso:saml": {"attributes": []},
     "sys:application:service": {"rows": []},
