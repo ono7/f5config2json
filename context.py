@@ -19,7 +19,7 @@ re_keys = re.compile(r'("[^{}]+"|[^{} ]+)')
 ### default line parsers ###
 
 
-def default_line_parse(line):
+def default_line_parse(line: str) -> tuple:
     """ default line parser, returns null for value if no match """
     try:
         k, v = default_kv.findall(line)
@@ -30,7 +30,7 @@ def default_line_parse(line):
     return k, v
 
 
-def default_line_list(line):
+def default_line_list(line: str) -> tuple:
     """ deals with list type lines e.g. 'item { a b c }' """
     k, v = default_list_kv.search(line).groups()
     if v != " ":
@@ -40,7 +40,7 @@ def default_line_list(line):
     return k, v
 
 
-def default_line_single_quotes(line):
+def default_line_single_quotes(line: str) -> tuple:
     """deals with quoted lines with spaces e.g. '/Common/no name standards' """
     quotes = re.compile(r'("[^"]*")')
     k = quotes.search(line).groups()[0]
@@ -51,7 +51,7 @@ def default_line_single_quotes(line):
 ### context aware functions to parse k, v pairs ###
 
 
-def context_ltm_pool(line: str):
+def context_ltm_pool(line: str) -> dict:
     monitor = re.compile(r"(monitor) (.*)")
     if line.startswith("monitor"):
         try:
@@ -71,7 +71,7 @@ def context_ltm_pool(line: str):
     return {k: v}
 
 
-def context_default(line: str):
+def context_default(line: str) -> dict:
     if line.startswith('"') and line.endswith('"'):
         k, v = default_line_single_quotes(line)
     elif line.endswith('"'):
